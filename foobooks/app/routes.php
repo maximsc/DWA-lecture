@@ -1,19 +1,49 @@
 <?php
 
 
+
+
 // Home page
 Route::get('/', function()
 {
-	return "Welcome to Foobooks";
+	
+	// String
+	// Redirect
+	// JSON
+	// View
+		
+	return View::make('index');		
+			
 });
 
 
 
 
 // List books / search results of books
-Route::get('/list/{format?}', function() {
+Route::get('/list/{format?}', function($format = 'html') {
 	
+	// Where are the books?
+	$path = app_path().'/database/books.json';
+
+	// Getting the contents of a file and returning it as a string
+	$books = File::get($path);
 	
+	// Convert our string of JSON into object
+	$books = json_decode($books,true);
+	
+	// Default
+	if($format == 'html') {
+		return View::make('list')->with('books',$books);		
+	}
+	elseif($format == 'json') {
+		return Response::json($books);
+	}
+	elseif($format == 'pdf') {
+		return "This is the pdf";
+	}
+	
+		
+
 	
 });
 
@@ -48,7 +78,6 @@ Route::post('/add/', function() {
 	
 });
 
-
 // Read in the books.json file
 Route::get('/data', function() {
 	
@@ -59,6 +88,8 @@ Route::get('/data', function() {
 	
 	// Convert our string of JSON into object
 	$books = json_decode($books,true);
+		
+	echo Pre::render($books, 'Books');
 	
 	print_r($books);
 	
