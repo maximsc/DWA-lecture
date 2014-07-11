@@ -1,50 +1,36 @@
 <?php
 
-
-
-
 // Home page
-Route::get('/', function()
-{
-	
-	// String
-	// Redirect
-	// JSON
-	// View
-		
+Route::get('/', function() {
 	return View::make('index');		
 			
 });
 
 
-
-
 // List books / search results of books
 Route::get('/list/{format?}', function($format = 'html') {
 	
-	// Where are the books?
+	// Set the path
 	$path = app_path().'/database/books.json';
 
-	// Getting the contents of a file and returning it as a string
+	// Load the json file
 	$books = File::get($path);
 	
-	// Convert our string of JSON into object
+	// Convert the string of JSON into object
 	$books = json_decode($books,true);
 	
-	// Default
+	// Default - HTML
 	if($format == 'html') {
 		return View::make('list')->with('books',$books);		
 	}
+	// JSON
 	elseif($format == 'json') {
 		return Response::json($books);
 	}
+	// PDF (Coming soon)
 	elseif($format == 'pdf') {
-		return "This is the pdf";
-	}
-	
-		
-
-	
+		return "This is the pdf (Coming soon).";
+	}	
 });
 
 
@@ -52,14 +38,11 @@ Route::get('/list/{format?}', function($format = 'html') {
 
 // Display edit form
 Route::get('/edit/{title}', function() {
-	
-	
-	
+		
 });
 
 // Process edit form
 Route::post('/edit/{title}', function() {
-	
 	
 });
 
@@ -69,7 +52,6 @@ Route::post('/edit/{title}', function() {
 // Display add form
 Route::get('/add/', function() {
 	
-	
 });
 
 // Process add form
@@ -78,20 +60,23 @@ Route::post('/add/', function() {
 	
 });
 
-// Read in the books.json file
+
+
+
+// Debug route: Read in the books.json file
 Route::get('/data', function() {
 	
+	// Set the path
 	$path = app_path().'/database/books.json';
 
-	// Getting the contents of a file and returning it as a string
+	// Load the json file
 	$books = File::get($path);
 	
-	// Convert our string of JSON into object
+	// Convert the string of JSON into object
 	$books = json_decode($books,true);
-		
-	echo Pre::render($books, 'Books');
 	
-	print_r($books);
+	// Output so we can check it out
+	return Pre::render($books, 'Books');
 	
 });
 
