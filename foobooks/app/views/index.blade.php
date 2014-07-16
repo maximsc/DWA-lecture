@@ -9,5 +9,16 @@
 	
 	<a href='/list'>View all Books</a> | 
 	<a href='/add'>+ Add New book</a>
+	
+	{{ Form::open(array('url' => '/list', 'method' => 'GET')) }}
+
+		Search: 
+		{{ Form::text('query') }}
+		
+		{{ Form::submit('Search!') }}
+	
+	{{ Form::close() }}
+	
+	
 @stop
 

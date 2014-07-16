@@ -10,15 +10,18 @@ Route::get('/', function() {
 // List books / search results of books
 Route::get('/list/{format?}', function($format = 'html') {
 	
-	// Set the path
-	$path = app_path().'/database/books.json';
+	// Instantiating an object of the Library class
+	$library = new Library(app_path().'/database/books.json'); 
+		
+	// Get the books
+	$books = $library->get_books();
+	
+	$query = Input::all('query');
+	
+	$books = $library->search($query);
+	
 
-	// Load the json file
-	$books = File::get($path);
-	
-	// Convert the string of JSON into object
-	$books = json_decode($books,true);
-	
+			
 	// Default - HTML
 	if($format == 'html') {
 		return View::make('list')->with('books',$books);		
@@ -58,6 +61,8 @@ Route::get('/add/', function() {
 Route::post('/add/', function() {
 	
 	
+	
+	
 });
 
 
@@ -66,17 +71,15 @@ Route::post('/add/', function() {
 // Debug route: Read in the books.json file
 Route::get('/data', function() {
 	
-	// Set the path
-	$path = app_path().'/database/books.json';
-
-	// Load the json file
-	$books = File::get($path);
+	// Instantiating an object of the Library class
+	$library = new Library(app_path().'/database/books.json'); 
+		
+	// Get the books
+	$books = $library->get_books();
 	
-	// Convert the string of JSON into object
-	$books = json_decode($books,true);
-	
-	// Output so we can check it out
+	// Debug
 	return Pre::render($books, 'Books');
+	
 	
 });
 
