@@ -2,25 +2,15 @@
 
 class Library {
 	
-	// Properties - Variables, Params
-	
-	// String
-	public $path;
-
-	// Array	
-	public $books;
-	
-	// Methods - Functions
-	// Encapsulation
+	// Properties
+	public $path;  // String
+	public $books; // Array	
 	
 	
+	// Methods
 	public function __construct($path) {
-		
 		$this->set_path($path);
-		
 	}
-	
-	// public, private, protected, static 
 	
 	public function get_path() {	
 		return $this->path;
@@ -51,7 +41,7 @@ class Library {
 	* @return Array $results
 	*/
 	public function search($query) {
-	
+		
 		$books = $this->books;
 						
 		# If any books match our query, they'll get stored in this array

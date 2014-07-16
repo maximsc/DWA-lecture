@@ -13,18 +13,19 @@ Route::get('/list/{format?}', function($format = 'html') {
 	// Instantiating an object of the Library class
 	$library = new Library(app_path().'/database/books.json'); 
 		
-	// Get the books
-	$books = $library->get_books();
+	$books = $library->get_books();	
+		
+	$query = Input::get('query');
 	
-	$query = Input::all('query');
+	if($query) {
+		$books = $library->search($query);
+	}
 	
-	$books = $library->search($query);
-	
-
-			
 	// Default - HTML
 	if($format == 'html') {
-		return View::make('list')->with('books',$books);		
+		return View::make('list')
+			->with('books', $books)
+			->with('query', $query);
 	}
 	// JSON
 	elseif($format == 'json') {

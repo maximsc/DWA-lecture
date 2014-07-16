@@ -16,6 +16,8 @@
 	<a href='/list/pdf' target='_blank'>PDF</a>
 
 	<br><br>
+	
+	You searched for {{{ $query }}}
 		
 	@foreach($books as $title => $book)
 		
