@@ -1,37 +1,40 @@
 <?php
 
-// Home page
+# Home page
 Route::get('/', function() {
-	return View::make('index');		
-			
+	return View::make('index');				
 });
 
 
-// List books / search results of books
+# List books/search results of books
 Route::get('/list/{format?}', function($format = 'html') {
 	
-	// Instantiating an object of the Library class
+	# Instantiating an object of the Library class
 	$library = new Library(app_path().'/database/books.json'); 
-		
-	$books = $library->get_books();	
-		
+	
 	$query = Input::get('query');
 	
+	# If there is a query, search the library with that query
 	if($query) {
 		$books = $library->search($query);
 	}
+	# Otherwise, just fetch all books
+	else {
+		$books = $library->get_books();	
+	}
 	
-	// Default - HTML
+	# Decide on output method...
+	# Default - HTML
 	if($format == 'html') {
 		return View::make('list')
 			->with('books', $books)
 			->with('query', $query);
 	}
-	// JSON
+	# JSON
 	elseif($format == 'json') {
 		return Response::json($books);
 	}
-	// PDF (Coming soon)
+	# PDF (Coming soon)
 	elseif($format == 'pdf') {
 		return "This is the pdf (Coming soon).";
 	}	
@@ -40,12 +43,12 @@ Route::get('/list/{format?}', function($format = 'html') {
 
 
 
-// Display edit form
+# Display edit form
 Route::get('/edit/{title}', function() {
 		
 });
 
-// Process edit form
+# Process edit form
 Route::post('/edit/{title}', function() {
 	
 });
@@ -53,34 +56,33 @@ Route::post('/edit/{title}', function() {
 
 
 
-// Display add form
+# Display add form
 Route::get('/add/', function() {
 	
 });
 
-// Process add form
+# Process add form
 Route::post('/add/', function() {
 	
-	
-	
-	
+		
 });
 
 
 
 
-// Debug route: Read in the books.json file
+
+
+# Debug route: Read in the books.json file
 Route::get('/data', function() {
 	
-	// Instantiating an object of the Library class
+	# Instantiating an object of the Library class
 	$library = new Library(app_path().'/database/books.json'); 
 		
-	// Get the books
+	# Get the books
 	$books = $library->get_books();
 	
-	// Debug
+	# Debug
 	return Pre::render($books, 'Books');
-	
 	
 });
 

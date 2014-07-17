@@ -20,3 +20,7 @@ h2 {
 	float:left;
 	margin-right:10px;
 }
+
+a:link, a:visited, a:active, a:hover {
+	text-decoration:underline;
+}

@@ -2,12 +2,13 @@
 
 class Library {
 	
-	// Properties
-	public $path;  // String
-	public $books; // Array	
+	# Properties...
+	public $path;  # String
+	public $books; # Array	
 	
+	# Methods...
 	
-	// Methods
+	# This __construct method gets called by default whenever an Object is instantiated from this Class
 	public function __construct($path) {
 		$this->set_path($path);
 	}
@@ -20,15 +21,20 @@ class Library {
 		$this->path = $new_path;
 	}
 	
-	public function get_books() {
+	public function get_books($refresh = false) {
 	
-		// Load the json file
+		# If we've already fetched the books, don't do it again
+		if($this->books && !$refresh) {
+			return $this->books;
+		}
+	
+		# Load the json file
 		$books = File::get($this->path);
 	
-		// Convert the string of JSON into object
+		# Convert the string of JSON into object
 		$books = json_decode($books,true);
 		
-		// Set the class param
+		# Set the class param
 		$this->books = $books;
 		
 		return $books;
@@ -42,7 +48,8 @@ class Library {
 	*/
 	public function search($query) {
 		
-		$books = $this->books;
+		# Get the books
+		$books = $this->get_books();
 						
 		# If any books match our query, they'll get stored in this array
 		$results = Array();
@@ -74,7 +81,7 @@ class Library {
 	* Resursively search through a book's attributes looking for a query match
 	* @param Array $attributes
 	* @param String $query
-	* @return Boolean
+	* @return Boolean Whether query was found in the attribute
 	*/
 	private function search_book_attributes($attributes,$query) { 
 	        
@@ -94,7 +101,4 @@ class Library {
 	  
 	 }
 	
-	
-	
-	
-}
+} # eoc

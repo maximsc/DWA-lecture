@@ -16,8 +16,15 @@
 	<a href='/list/pdf' target='_blank'>PDF</a>
 
 	<br><br>
-	
-	You searched for {{{ $query }}}
+		
+	@if(!empty(trim($query)))
+		<p>You searched for <strong>{{{ $query }}}</strong></p>
+		
+		@if(count($books) == 0)
+			<p>No matches found</p>
+		@endif
+		
+	@endif
 		
 	@foreach($books as $title => $book)
 		
@@ -35,9 +42,11 @@
 			<p>
 				Tags:
 				@foreach($book['tags'] as $tag)
-					{{ $tag }}
+					<em>{{ $tag }}</em>
 				@endforeach
 			</p>
+			
+			<a href='{{ $book['cover'] }}'>Purchase this book...</a>
 			
 		</section>
 	
