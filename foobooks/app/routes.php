@@ -8,19 +8,25 @@ Route::get('/', function() {
 
 # List books/search results of books
 Route::get('/list/{format?}', function($format = 'html') {
-	
-	# Instantiating an object of the Library class
-	$library = new Library(app_path().'/database/books.json'); 
-	
+
 	$query = Input::get('query');
 	
 	# If there is a query, search the library with that query
 	if($query) {
-		$books = $library->search($query);
+		
+		# This is how we did it in class...
+		//$books = Book::where('author', 'LIKE', "%$query%")->get();
+		
+		# Here's a better option because it searches across multiple fields
+		$books = Book::where('author', 'LIKE', "%$query%")
+			->orWhere('title', 'LIKE', "%$query%")
+			->orWhere('published', 'LIKE', "%$query%")
+			->get();
+		
 	}
 	# Otherwise, just fetch all books
 	else {
-		$books = $library->get_books();	
+		$books = Book::all();	
 	}
 	
 	# Decide on output method...
@@ -59,14 +65,28 @@ Route::post('/edit/{title}', function() {
 # Display add form
 Route::get('/add/', function() {
 
-	
+	return View::make('add');
 	
 });
 
 # Process add form
 Route::post('/add/', function() {
 	
+	//echo Pre::render(Input::all());
 	
+	# Instantiate the book model
+	$book = new Book();
+	
+	$book->title = Input::get('title');
+	$book->author = Input::get('author');
+	$book->published = Input::get('published');
+	$book->cover = Input::get('cover');
+	$book->purchase_link = Input::get('purchase_link');
+	
+	# Magic: Eloquent
+	$book->save();
+	
+	return "Added a new row";
 		
 });
 
