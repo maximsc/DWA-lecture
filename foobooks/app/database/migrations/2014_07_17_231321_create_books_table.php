@@ -12,16 +12,24 @@ class CreateBooksTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('books', function($table)
-		{
+		Schema::create('books', function($table) {
+			
+			# AI Primary key
 			$table->increments('id');
+			
+			# Adds created_at and updated_at columns
+			$table->timestamps();
+			
 			$table->string('title');
 			$table->string('author');
+			$table->integer('published');
 			$table->string('cover');
-			$table->integer('published_date');
+			$table->string('purchase_link');
+			$table->integer('user_id');
+			$table->string('foobar');
+			
 			
 		});
-	
 	}
 
 	/**
@@ -31,9 +39,7 @@ class CreateBooksTable extends Migration {
 	 */
 	public function down()
 	{
-		
 		Schema::drop('books');
-		
 	}
 
 }
