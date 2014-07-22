@@ -45,7 +45,6 @@ class CreateTables extends Migration {
 			$table->integer('published');
 			$table->string('cover');
 			$table->string('purchase_link');
-			$table->integer('user_id');
 			
 			# Define foreign keys...
 			$table->foreign('author_id')->references('id')->on('authors');

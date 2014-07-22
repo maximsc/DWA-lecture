@@ -231,6 +231,126 @@ Route::get('/practice-delete', function() {
 
 
 /*-------------------------------------------------------------------------------------------------
+Quick and dirty method to dump out the results of the books collection
+-------------------------------------------------------------------------------------------------*/
+function print_books($books) {
+	
+	# Print the results
+	if(count($books) > 1) {
+		foreach($books as $book) {
+			echo $book->title."<br>";
+		}
+	}
+	else {
+		echo $books->title;
+	}
+}
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-without-constraints
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-without-constraints', function() {
+
+	# W/o any constraints
+	
+	# w/ the find() fetch method
+	$books = Book::find(1);
+	
+	# w/ the first() fetch method
+	//$books = Book::first();
+		
+	# w/ the all() fetch method
+	//$books = Book::all();
+	
+	return print_collection($books);
+
+});
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-with-constraints
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-with-constraints', function() {
+		
+	# where constraint + first() fetch method
+	//$books = Book::where('published','>',1960)->first();
+		
+	# where constraint + get() fetch method
+	//$books = Book::where('published','>',1960)->get();
+	
+	# multiple constraints + get() fetch method
+	/*
+	$books = Book::where('published','>',1960)
+		->orWhere('title', 'LIKE', '%gatsby')
+		->get();
+	*/
+		
+	# whereRaw constraint + the get() fetch method 
+	$books = Book::whereRaw('title LIKE "%gatsby" OR title LIKE "%bell%"')->get();
+
+	return print_books($books);
+	
+});
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !collections
+-------------------------------------------------------------------------------------------------*/
+Route::get('/collections', function() {
+
+	$collection = Book::all();
+	
+	# The many faces of a Eloquent Collection object...
+	
+	# Treat it like a string:
+	echo $collection;   
+	
+	# Treat it like an array:
+	//foreach($collection as $book) {
+    //	echo $book['title']."<br>";
+	//}   
+	
+	# Treat it like an object:
+	//foreach($collection as $book) {
+	//  echo $book->title."<br>";
+	//}
+	
+	
+});
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-responsibility
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-responsibility', function() {
+	
+	# How can you get the first book?
+	
+	# Burden falls on the database...
+	# 2 queries:
+	$books = Book::all(); 
+	$first_book = Book::first();
+
+	# Burden falls on the collection...
+	# 1 query (better):
+	//$books = Book::all();
+	//$first_book = $books->first();
+	
+	print_books($first_book);
+	
+});
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
 // !seed-raw
 Quickly seed books table for demonstration purposes
 -------------------------------------------------------------------------------------------------*/
@@ -283,10 +403,10 @@ Route::get('/seed-orm', function() {
 	DB::statement('TRUNCATE book_tag');
 	
 	# Authors
-	$fitzgerald = new Author;
-	$fitzgerald->name = 'F. Scott Fiztgerald';
-	$fitzgerald->birth_date = '1896-09-24';
-	$fitzgerald->save();
+	$fiztgerald = new Author;
+	$fiztgerald->name = 'F. Scott Fiztgerald';
+	$fiztgerald->birth_date = '1896-09-24';
+	$fiztgerald->save();
 	
 	$plath = new Author;
 	$plath->name = 'Sylvia Plath';
@@ -298,53 +418,29 @@ Route::get('/seed-orm', function() {
 	$angelou->birth_date = '1928-04-04';
 	$angelou->save();
 	
-	# Tags
-	$novel = new Tag;
-	$novel->name = 'novel';
-	$novel->save();
+	# Tags (Created using the Model Create shortcut method)
+	# Note: Tags model must have `protected $fillable = array('name');` in order for this to work
+	$novel         = Tag::create(array('name' => 'novel'));
+	$fiction       = Tag::create(array('name' => 'fiction'));
+	$nonfiction    = Tag::create(array('name' => 'nonfiction'));
+	$classic       = Tag::create(array('name' => 'classic'));
+	$wealth        = Tag::create(array('name' => 'wealth'));
+	$women         = Tag::create(array('name' => 'women'));
+	$autobiography = Tag::create(array('name' => 'autobiography'));
 	
-	$fiction = new Tag;
-	$fiction->name = 'fiction';
-	$fiction->save();
-	
-	$nonfiction = new Tag;
-	$nonfiction->name = 'nonfiction';
-	$nonfiction->save();
-	
-	$novel = new Tag;
-	$novel->name = 'novel';
-	$novel->save();
-	
-	$classic = new Tag;
-	$classic->name = 'classic';
-	$classic->save();
-	
-	$wealth = new Tag;
-	$wealth->name = 'wealth';
-	$wealth->save();
-	
-	$women = new Tag;
-	$women->name = 'women';
-	$women->save();
-	
-	$wealth = new Tag;
-	$wealth->name = 'wealth';
-	$wealth->save();
-	
-	$autobiography = new Tag;
-	$autobiography->name = 'autobiography';
-	$autobiography->save();
-
 	# Books		
 	$gatsby = new Book;
 	$gatsby->title = 'The Great Gatsby';
 	$gatsby->published = 1925;
 	$gatsby->cover = 'http://img2.imagesbn.com/p/9780743273565_p0_v4_s114x166.JPG';
 	$gatsby->purchase_link = 'http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565';
+	
+	# Associate has to be called *before* the book is created (save()) 
+	$gatsby->author()->associate($fiztgerald); # Equivalent of $gatsby->author_id = $fiztgerald->id
 	$gatsby->save();
-	# Attach has to be called after the book is created (save()), 
+	
+	# Attach has to be called *after* the book is created (save()), 
 	# since resulting `book_id` is needed in the book_tag pivot table
-	$gatsby->author()->associate($fitzgerald);
 	$gatsby->tags()->attach($novel); 
 	$gatsby->tags()->attach($fiction); 
 	$gatsby->tags()->attach($classic); 
@@ -355,10 +451,8 @@ Route::get('/seed-orm', function() {
 	$belljar->published = 1963;
 	$belljar->cover = 'http://img1.imagesbn.com/p/9780061148514_p0_v2_s114x166.JPG';
 	$belljar->purchase_link = 'http://www.barnesandnoble.com/w/bell-jar-sylvia-plath/1100550703?ean=9780061148514';
-	$belljar->author()->associate($plath); # Equivalent of $belljar->author_id = $plath->id
+	$belljar->author()->associate($plath);
 	$belljar->save();
-	# Attach has to be called after the book is created (save()), 
-	# since resulting `book_id` is needed in the book_tag pivot table
 	$belljar->tags()->attach($novel); 
 	$belljar->tags()->attach($fiction); 
 	$belljar->tags()->attach($classic); 
@@ -366,13 +460,11 @@ Route::get('/seed-orm', function() {
 
 	$cagedbird = new Book;
 	$cagedbird->title = 'I Know Why the Caged Bird Sings';
-	$cagedbird->published = 1963;
+	$cagedbird->published = 1969;
 	$cagedbird->cover = 'http://img1.imagesbn.com/p/9780345514400_p0_v1_s114x166.JPG';
 	$cagedbird->purchase_link = 'http://www.barnesandnoble.com/w/i-know-why-the-caged-bird-sings-maya-angelou/1100392955?ean=9780345514400';
-	$cagedbird->author()->associate($angelou); # Equivalent of $cagedbird->author_id = $angelou->id
+	$cagedbird->author()->associate($angelou);
 	$cagedbird->save();
-	# Attach has to be called after the book is created (save()), 
-	# since resulting `book_id` is needed in the book_tag pivot table
 	$cagedbird->tags()->attach($autobiography); 
 	$cagedbird->tags()->attach($nonfiction); 
 	$cagedbird->tags()->attach($classic); 
@@ -387,19 +479,48 @@ Route::get('/seed-orm', function() {
 
 
 /*-------------------------------------------------------------------------------------------------
-// !query-tags
+// !query-relationships-author
 -------------------------------------------------------------------------------------------------*/
-Route::get('/query-tags', function() {
+Route::get('/query-relationships-author', function() {
 	
-	# Get the first book
+	# Get the first book as an example
 	$book = Book::first();
+		
+	# Get the author from this book using the "author" dynamic property
+	# "author" corresponds to the the relationship method defined in the Book model
+	$author = $book->author; 
 	
-	# Get the tags from this book
-	$tags = $book->tags; # This needs to match the relationship method name defined in Books
+	# Print book info
+	echo $book->title." was written by ".$author->name."<br>";
 	
+	# FYI: You could also access the author name like this:
+	//$book->author->name;
+			
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-relationships-tags
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-relationships-tags', function() {
+	
+	# Get the first book as an example
+	$book = Book::first();
+		
+	# Get the tags from this book using the "tags" dynamic property
+	# "tags" corresponds to the the relationship method defined in the Book model
+	$tags = $book->tags; 
+	
+	# Print results
+	echo "The tags for <strong>".$book->title."</strong> are: <br>";
 	foreach($tags as $tag) {
 		echo $tag->name."<br>";
 	}
+
+			
 });
 
 
@@ -411,12 +532,12 @@ Route::get('/query-tags', function() {
 -------------------------------------------------------------------------------------------------*/
 Route::get('/query-eager-loading-tags', function() {
 	
-	# Without eager loading: N+1: 1 Query to get all books 1 query for each author
-	# $books = Book::get();
+	# Without eager loading: N+1: 1 Query to get all books plus 1 query for each author (4 total)
+	$books = Book::get();
 	
 	# Eager loading: 2 Queries: 1 query to get all the books, 1 query to get all the authors
-	$books = Book::with('author')->get(); 
-
+	//$books = Book::with('author')->get();
+	
 	foreach($books as $book) {
 		echo $book->author->name.' wrote '.$book->title.'<br>';
 	}
@@ -428,12 +549,17 @@ Route::get('/query-eager-loading-tags', function() {
 
 
 /*-------------------------------------------------------------------------------------------------
-// !query-eager-loading
+// !query-eager-loading-tags-and-author
 -------------------------------------------------------------------------------------------------*/
 Route::get('/query-eager-loading-tags-and-authors', function() {
 	
-	$books = Book::with('tags','author')->get(); 
+	# Without eager loading: 7 Queries
+	//$books = Book::get();
+
+	# With eager loading: 3 Queries
+	// $books = Book::with('tags','author')->get(); 
 	
+	# Print results
 	foreach($books as $book) {
 		
 		echo $book->title.' by '.$book->author->name.'<br>';
@@ -442,7 +568,6 @@ Route::get('/query-eager-loading-tags-and-authors', function() {
 		}
 		
 		echo "<br><br>";
-		
 	}
 		
 });
