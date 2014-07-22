@@ -2,9 +2,22 @@
 
 # Home page
 Route::get('/', function() {
+		
 	return View::make('index');				
+	
 });
 
+
+# For demo purposes: Print all routes
+Route::get('/routes', function() {
+	
+	$routeCollection = Route::getRoutes();
+	
+	foreach ($routeCollection as $value) {
+	    echo "<a href='/".$value->getPath()."' target='_blank'>".$value->getPath()."</a><br>";
+	}
+	
+});
 
 
 
@@ -214,7 +227,7 @@ Route::get('/crud-update', function() {
 /*-------------------------------------------------------------------------------------------------
 // !CRUD: Delete
 -------------------------------------------------------------------------------------------------*/
-Route::get('/practice-delete', function() {
+Route::get('/crud-delete', function() {
 	
 	# Get a book to delete
 	$book = Book::first();
