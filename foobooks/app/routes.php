@@ -6,6 +6,8 @@ Route::get('/', function() {
 });
 
 
+
+
 # List books/search results of books
 Route::get('/list/{format?}', function($format = 'html') {
 
@@ -17,16 +19,17 @@ Route::get('/list/{format?}', function($format = 'html') {
 		# This is how we did it in class...
 		//$books = Book::where('author', 'LIKE', "%$query%")->get();
 		
+		
 		# Here's a better option because it searches across multiple fields
 		$books = Book::where('author', 'LIKE', "%$query%")
 			->orWhere('title', 'LIKE', "%$query%")
 			->orWhere('published', 'LIKE', "%$query%")
 			->get();
-		
+				
 	}
 	# Otherwise, just fetch all books
 	else {
-		$books = Book::all();	
+		$books = Book::all();
 	}
 	
 	# Decide on output method...
@@ -93,9 +96,26 @@ Route::post('/add/', function() {
 
 
 
+/*-------------------------------------------------------------------------------------------------
+Debugging/Demonstration Routes
+-------------------------------------------------------------------------------------------------*/
+Route::get('/composer-openshift-test', function() {
+
+	$generator  = new Badcow\LoremIpsum\Generator();
+	$paragraphs = $generator->getParagraphs(5);
+	$paragraphs = implode('<p>', $paragraphs);
+	
+	return $paragraphs;
+	
+});
 
 
+
+
+
+/*-------------------------------------------------------------------------------------------------
 # Debug route: Read in the books.json file
+-------------------------------------------------------------------------------------------------*/
 Route::get('/data', function() {
 	
 	# Instantiating an object of the Library class
@@ -112,24 +132,10 @@ Route::get('/data', function() {
 
 
 
-# Quickly seed books table for demonstration purposes
-Route::get('/seed', function() {
-	
-	$query = "INSERT INTO `books` (`created_at`, `updated_at`, `title`, `author`, `published`, `cover`, `purchase_link`)
-	VALUES
-	('2014-07-17 09:15:14','2014-07-17 09:15:14','The Great Gatsby','F. Scott Fiztgerald',1925,'http://img2.imagesbn.com/p/9780743273565_p0_v4_s114x166.JPG','http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565'),
-	('2014-07-17 09:15:47','2014-07-17 09:15:47','The Bell Jar','Sylvia Plath',1963,'http://img1.imagesbn.com/p/9780061148514_p0_v2_s114x166.JPG','http://www.barnesandnoble.com/w/bell-jar-sylvia-plath/1100550703?ean=9780061148514'),
-	('2014-07-17 09:16:20','2014-07-17 09:16:20','I Know Why the Caged Bird Sings','Maya Angelou',1969,'http://img1.imagesbn.com/p/9780345514400_p0_v1_s114x166.JPG','http://www.barnesandnoble.com/w/i-know-why-the-caged-bird-sings-maya-angelou/1100392955?ean=9780345514400');
-	";
-	
-	DB::statement($query);
-	
-	return $query;
-	
-});
 
-
-
+/*-------------------------------------------------------------------------------------------------
+// !mysql-connection-test
+-------------------------------------------------------------------------------------------------*/
 Route::get('/mysql-connection-test', function() {
 	
 	$results = DB::select('SHOW DATABASES;');
@@ -138,7 +144,11 @@ Route::get('/mysql-connection-test', function() {
 	
 });
 
-Route::get('/practice-create', function() {
+
+/*-------------------------------------------------------------------------------------------------
+// !CRUD: Create
+-------------------------------------------------------------------------------------------------*/
+Route::get('/crud-create', function() {
 	
 	# Instantiate the book model
 	$book = new Book();
@@ -156,7 +166,14 @@ Route::get('/practice-create', function() {
 
 });
 
-Route::get('/practice-read', function() {
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !CRUD: Read
+-------------------------------------------------------------------------------------------------*/
+Route::get('/crud-read', function() {
 	
 	//$book = new Book();
 	
@@ -171,25 +188,38 @@ Route::get('/practice-read', function() {
 	
 });
 
-Route::get('/practice-update', function() {
-	
-	//$book = Book::where('id', 'LIKE', '%Scott%')->first();
-	//$book = Book::where('id', '=', 1);
-	
-	$book = Book::find(1);
 
-	$book->title = 'The Great Gatsby...!';
+/*-------------------------------------------------------------------------------------------------
+// !CRUD: Update
+-------------------------------------------------------------------------------------------------*/
+Route::get('/crud-update', function() {
 	
+	# Get a book to update
+	$book = Book::first();
+	
+	# Update the author
+	$book->author = 'Foobar';
+	
+	# Save the changes
 	$book->save();
 	
-	echo "You updated the book.";
-		
+	echo "This book has been updated";
+
 });
 
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !CRUD: Delete
+-------------------------------------------------------------------------------------------------*/
 Route::get('/practice-delete', function() {
 	
-	$book = Book::find(2);
+	# Get a book to delete
+	$book = Book::first();
 	
+	# Delete the book
 	$book->delete();
 	
 	echo "This book has been deleted";
@@ -198,4 +228,243 @@ Route::get('/practice-delete', function() {
 
 
 
+
+
+/*-------------------------------------------------------------------------------------------------
+// !seed-raw
+Quickly seed books table for demonstration purposes
+-------------------------------------------------------------------------------------------------*/
+Route::get('/seed-raw', function() {
+	
+	$query = "INSERT INTO `books` (`created_at`, `updated_at`, `title`, `author`, `published`, `cover`, `purchase_link`)
+	VALUES
+	('2014-07-17 09:15:14','2014-07-17 09:15:14','The Great Gatsby','F. Scott Fiztgerald',1925,'http://img2.imagesbn.com/p/9780743273565_p0_v4_s114x166.JPG','http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565'),
+	('2014-07-17 09:15:47','2014-07-17 09:15:47','The Bell Jar','Sylvia Plath',1963,'http://img1.imagesbn.com/p/9780061148514_p0_v2_s114x166.JPG','http://www.barnesandnoble.com/w/bell-jar-sylvia-plath/1100550703?ean=9780061148514'),
+	('2014-07-17 09:16:20','2014-07-17 09:16:20','I Know Why the Caged Bird Sings','Maya Angelou',1969,'http://img1.imagesbn.com/p/9780345514400_p0_v1_s114x166.JPG','http://www.barnesandnoble.com/w/i-know-why-the-caged-bird-sings-maya-angelou/1100392955?ean=9780345514400');
+	";
+	
+	DB::statement($query);
+	
+	return $query;
+	
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !collection
+-------------------------------------------------------------------------------------------------*/
+
+Route::get('/example', function() {
+	
+	$collection = Book::all();
+	echo Pre::render($collection);
+	
+	
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !seed-orm
+# Quickly seed books table for demonstration purposes
+-------------------------------------------------------------------------------------------------*/
+Route::get('/seed-orm', function() {
+	
+	# Clear the tables to a blank slate
+	DB::statement('SET FOREIGN_KEY_CHECKS=0'); # Disable FK constraints so that all rows can be deleted, even if there's an associated FK
+	DB::statement('TRUNCATE books');
+	DB::statement('TRUNCATE authors');
+	DB::statement('TRUNCATE tags');
+	DB::statement('TRUNCATE book_tag');
+	
+	# Authors
+	$fitzgerald = new Author;
+	$fitzgerald->name = 'F. Scott Fiztgerald';
+	$fitzgerald->birth_date = '1896-09-24';
+	$fitzgerald->save();
+	
+	$plath = new Author;
+	$plath->name = 'Sylvia Plath';
+	$plath->birth_date = '1932-10-27';
+	$plath->save();
+
+	$angelou = new Author;
+	$angelou->name = 'Maya Angelou';
+	$angelou->birth_date = '1928-04-04';
+	$angelou->save();
+	
+	# Tags
+	$novel = new Tag;
+	$novel->name = 'novel';
+	$novel->save();
+	
+	$fiction = new Tag;
+	$fiction->name = 'fiction';
+	$fiction->save();
+	
+	$nonfiction = new Tag;
+	$nonfiction->name = 'nonfiction';
+	$nonfiction->save();
+	
+	$novel = new Tag;
+	$novel->name = 'novel';
+	$novel->save();
+	
+	$classic = new Tag;
+	$classic->name = 'classic';
+	$classic->save();
+	
+	$wealth = new Tag;
+	$wealth->name = 'wealth';
+	$wealth->save();
+	
+	$women = new Tag;
+	$women->name = 'women';
+	$women->save();
+	
+	$wealth = new Tag;
+	$wealth->name = 'wealth';
+	$wealth->save();
+	
+	$autobiography = new Tag;
+	$autobiography->name = 'autobiography';
+	$autobiography->save();
+
+	# Books		
+	$gatsby = new Book;
+	$gatsby->title = 'The Great Gatsby';
+	$gatsby->published = 1925;
+	$gatsby->cover = 'http://img2.imagesbn.com/p/9780743273565_p0_v4_s114x166.JPG';
+	$gatsby->purchase_link = 'http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565';
+	$gatsby->save();
+	# Attach has to be called after the book is created (save()), 
+	# since resulting `book_id` is needed in the book_tag pivot table
+	$gatsby->author()->associate($fitzgerald);
+	$gatsby->tags()->attach($novel); 
+	$gatsby->tags()->attach($fiction); 
+	$gatsby->tags()->attach($classic); 
+	$gatsby->tags()->attach($wealth); 
+	
+	$belljar = new Book;
+	$belljar->title = 'The Bell Jar';
+	$belljar->published = 1963;
+	$belljar->cover = 'http://img1.imagesbn.com/p/9780061148514_p0_v2_s114x166.JPG';
+	$belljar->purchase_link = 'http://www.barnesandnoble.com/w/bell-jar-sylvia-plath/1100550703?ean=9780061148514';
+	$belljar->author()->associate($plath); # Equivalent of $belljar->author_id = $plath->id
+	$belljar->save();
+	# Attach has to be called after the book is created (save()), 
+	# since resulting `book_id` is needed in the book_tag pivot table
+	$belljar->tags()->attach($novel); 
+	$belljar->tags()->attach($fiction); 
+	$belljar->tags()->attach($classic); 
+	$belljar->tags()->attach($women); 
+
+	$cagedbird = new Book;
+	$cagedbird->title = 'I Know Why the Caged Bird Sings';
+	$cagedbird->published = 1963;
+	$cagedbird->cover = 'http://img1.imagesbn.com/p/9780345514400_p0_v1_s114x166.JPG';
+	$cagedbird->purchase_link = 'http://www.barnesandnoble.com/w/i-know-why-the-caged-bird-sings-maya-angelou/1100392955?ean=9780345514400';
+	$cagedbird->author()->associate($angelou); # Equivalent of $cagedbird->author_id = $angelou->id
+	$cagedbird->save();
+	# Attach has to be called after the book is created (save()), 
+	# since resulting `book_id` is needed in the book_tag pivot table
+	$cagedbird->tags()->attach($autobiography); 
+	$cagedbird->tags()->attach($nonfiction); 
+	$cagedbird->tags()->attach($classic); 
+	$cagedbird->tags()->attach($women);
+	
+	echo "Done; check DB for results."; 
+	
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-tags
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-tags', function() {
+	
+	# Get the first book
+	$book = Book::first();
+	
+	# Get the tags from this book
+	$tags = $book->tags; # This needs to match the relationship method name defined in Books
+	
+	foreach($tags as $tag) {
+		echo $tag->name."<br>";
+	}
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-eager-loading-tags
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-eager-loading-tags', function() {
+	
+	# Without eager loading: N+1: 1 Query to get all books 1 query for each author
+	# $books = Book::get();
+	
+	# Eager loading: 2 Queries: 1 query to get all the books, 1 query to get all the authors
+	$books = Book::with('author')->get(); 
+
+	foreach($books as $book) {
+		echo $book->author->name.' wrote '.$book->title.'<br>';
+	}
+			
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !query-eager-loading
+-------------------------------------------------------------------------------------------------*/
+Route::get('/query-eager-loading-tags-and-authors', function() {
+	
+	$books = Book::with('tags','author')->get(); 
+	
+	foreach($books as $book) {
+		
+		echo $book->title.' by '.$book->author->name.'<br>';
+		foreach($book->tags as $tag) {
+			echo $tag->name.", ";
+		}
+		
+		echo "<br><br>";
+		
+	}
+		
+});
+
+
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+Environment fiddling
+-------------------------------------------------------------------------------------------------*/
+Route::get('/environment', function() {
+	
+	echo "Environment: ".App::environment();
+	
+});
+
+Route::get('/trigger-error',function() {
+	
+	$foo = new Foobar;
+	
+});
 

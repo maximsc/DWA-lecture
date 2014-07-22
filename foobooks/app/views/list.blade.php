@@ -33,7 +33,7 @@
 			
 			<h2>{{ $book['title'] }}</h2>
 			
-			By {{ $book['author'] }}
+			By {{ $book['author']->name }}
 			
 			<p>
 				{{ $book['published'] }}
