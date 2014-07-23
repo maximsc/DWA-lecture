@@ -1,6 +1,10 @@
 <?php
 
-# Home page
+
+
+/*-------------------------------------------------------------------------------------------------
+Home page
+-------------------------------------------------------------------------------------------------*/
 Route::get('/', function() {
 		
 	return View::make('index');				
@@ -8,7 +12,12 @@ Route::get('/', function() {
 });
 
 
-# For demo purposes: Print all routes
+
+
+
+/*-------------------------------------------------------------------------------------------------
+For demo purposes, print all routes
+-------------------------------------------------------------------------------------------------*/
 Route::get('/routes', function() {
 	
 	$routeCollection = Route::getRoutes();
@@ -167,7 +176,7 @@ Route::get('/crud-create', function() {
 	$book = new Book();
 	
 	$book->title = 'The Great Gatsby';
-	$book->author = 'F. Scott Fiztgerald';
+	$book->author = 'F. Scott Fitzgerald';
 	$book->published = 1925;
 	$book->cover = 'http://imagesbn.com....';
 	$book->purchase_link = 'http://amazon...';
@@ -243,21 +252,6 @@ Route::get('/crud-delete', function() {
 
 
 
-/*-------------------------------------------------------------------------------------------------
-Quick and dirty method to dump out the results of the books collection
--------------------------------------------------------------------------------------------------*/
-function print_books($books) {
-	
-	# Print the results
-	if(count($books) > 1) {
-		foreach($books as $book) {
-			echo $book->title."<br>";
-		}
-	}
-	else {
-		echo $books->title;
-	}
-}
 
 
 
@@ -266,20 +260,15 @@ function print_books($books) {
 // !query-without-constraints
 -------------------------------------------------------------------------------------------------*/
 Route::get('/query-without-constraints', function() {
-
-	# W/o any constraints
 	
-	# w/ the find() fetch method
 	$books = Book::find(1);
 	
-	# w/ the first() fetch method
-	//$books = Book::first();
-		
-	# w/ the all() fetch method
+	//$books = Book::first();	
+	
 	//$books = Book::all();
 	
-	return print_collection($books);
-
+	Book::pretty_debug($books);
+	
 });
 
 
@@ -289,24 +278,16 @@ Route::get('/query-without-constraints', function() {
 -------------------------------------------------------------------------------------------------*/
 Route::get('/query-with-constraints', function() {
 		
-	# where constraint + first() fetch method
-	//$books = Book::where('published','>',1960)->first();
+	$books = Book::where('published','>',1960)->first();
 		
-	# where constraint + get() fetch method
 	//$books = Book::where('published','>',1960)->get();
-	
-	# multiple constraints + get() fetch method
-	/*
-	$books = Book::where('published','>',1960)
-		->orWhere('title', 'LIKE', '%gatsby')
-		->get();
-	*/
 		
-	# whereRaw constraint + the get() fetch method 
-	$books = Book::whereRaw('title LIKE "%gatsby" OR title LIKE "%bell%"')->get();
+	//$books = Book::where('published','>',1960)->orWhere('title', 'LIKE', '%gatsby')->get();
 
-	return print_books($books);
-	
+	//$books = Book::whereRaw('title LIKE "%gatsby" OR title LIKE "%bell%"')->get();
+
+	Book::pretty_debug($books);
+		
 });
 
 
@@ -318,11 +299,13 @@ Route::get('/collections', function() {
 
 	$collection = Book::all();
 	
+	//echo Pre::render($collection);
+	
 	# The many faces of a Eloquent Collection object...
 	
 	# Treat it like a string:
 	echo $collection;   
-	
+
 	# Treat it like an array:
 	//foreach($collection as $book) {
     //	echo $book['title']."<br>";
@@ -330,9 +313,9 @@ Route::get('/collections', function() {
 	
 	# Treat it like an object:
 	//foreach($collection as $book) {
-	//  echo $book->title."<br>";
+	// echo $book->title."<br>";
 	//}
-	
+		
 	
 });
 
@@ -344,41 +327,34 @@ Route::get('/collections', function() {
 -------------------------------------------------------------------------------------------------*/
 Route::get('/query-responsibility', function() {
 	
-	# How can you get the first book?
+	# Scenario: You have a view that needs to display a table of all the books, so you run this query:
+	$books = Book::orderBy('title')->get();	
 	
-	# Burden falls on the database...
-	# 2 queries:
-	$books = Book::all(); 
-	$first_book = Book::first();
+	# Then, you need to display the first book that was added to the table
+	# There are two ways you can do this...
+	
+	# Query the database again
+	$first_book = Book::orderBy('title')->first();	
 
-	# Burden falls on the collection...
-	# 1 query (better):
-	//$books = Book::all();
+	# Or query the existing collection 
 	//$first_book = $books->first();
 	
-	print_books($first_book);
+	echo $first_book->title;
 	
 });
 
 
-
-
 /*-------------------------------------------------------------------------------------------------
-// !seed-raw
-Quickly seed books table for demonstration purposes
+# http://stackoverflow.com/questions/8746519/sql-what-is-the-default-order-by-of-queries
+// !order-example
 -------------------------------------------------------------------------------------------------*/
-Route::get('/seed-raw', function() {
+Route::get('/order-example', function() {
 	
-	$query = "INSERT INTO `books` (`created_at`, `updated_at`, `title`, `author`, `published`, `cover`, `purchase_link`)
-	VALUES
-	('2014-07-17 09:15:14','2014-07-17 09:15:14','The Great Gatsby','F. Scott Fiztgerald',1925,'http://img2.imagesbn.com/p/9780743273565_p0_v4_s114x166.JPG','http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565'),
-	('2014-07-17 09:15:47','2014-07-17 09:15:47','The Bell Jar','Sylvia Plath',1963,'http://img1.imagesbn.com/p/9780061148514_p0_v2_s114x166.JPG','http://www.barnesandnoble.com/w/bell-jar-sylvia-plath/1100550703?ean=9780061148514'),
-	('2014-07-17 09:16:20','2014-07-17 09:16:20','I Know Why the Caged Bird Sings','Maya Angelou',1969,'http://img1.imagesbn.com/p/9780345514400_p0_v1_s114x166.JPG','http://www.barnesandnoble.com/w/i-know-why-the-caged-bird-sings-maya-angelou/1100392955?ean=9780345514400');
-	";
+	$books = Book::where('published', '>', 1950)->
+		orderBy('title','desc')
+		->get();
 	
-	DB::statement($query);
-	
-	return $query;
+	Book::pretty_debug($books);
 	
 });
 
@@ -390,7 +366,7 @@ Route::get('/seed-raw', function() {
 // !collection
 -------------------------------------------------------------------------------------------------*/
 
-Route::get('/example', function() {
+Route::get('/collection', function() {
 	
 	$collection = Book::all();
 	echo Pre::render($collection);
@@ -416,10 +392,10 @@ Route::get('/seed-orm', function() {
 	DB::statement('TRUNCATE book_tag');
 	
 	# Authors
-	$fiztgerald = new Author;
-	$fiztgerald->name = 'F. Scott Fiztgerald';
-	$fiztgerald->birth_date = '1896-09-24';
-	$fiztgerald->save();
+	$fitzgerald = new Author;
+	$fitzgerald->name = 'F. Scott Fitzgerald';
+	$fitzgerald->birth_date = '1896-09-24';
+	$fitzgerald->save();
 	
 	$plath = new Author;
 	$plath->name = 'Sylvia Plath';
@@ -449,7 +425,7 @@ Route::get('/seed-orm', function() {
 	$gatsby->purchase_link = 'http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565';
 	
 	# Associate has to be called *before* the book is created (save()) 
-	$gatsby->author()->associate($fiztgerald); # Equivalent of $gatsby->author_id = $fiztgerald->id
+	$gatsby->author()->associate($fitzgerald); # Equivalent of $gatsby->author_id = $fitzgerald->id
 	$gatsby->save();
 	
 	# Attach has to be called *after* the book is created (save()), 
@@ -466,7 +442,8 @@ Route::get('/seed-orm', function() {
 	$belljar->purchase_link = 'http://www.barnesandnoble.com/w/bell-jar-sylvia-plath/1100550703?ean=9780061148514';
 	$belljar->author()->associate($plath);
 	$belljar->save();
-	$belljar->tags()->attach($novel); 
+	
+	$belljar->tags()->attach($novel); 	
 	$belljar->tags()->attach($fiction); 
 	$belljar->tags()->attach($classic); 
 	$belljar->tags()->attach($women); 
@@ -497,7 +474,7 @@ Route::get('/seed-orm', function() {
 Route::get('/query-relationships-author', function() {
 	
 	# Get the first book as an example
-	$book = Book::first();
+	$book = Book::orderBy('title')->first();
 		
 	# Get the author from this book using the "author" dynamic property
 	# "author" corresponds to the the relationship method defined in the Book model
@@ -521,7 +498,7 @@ Route::get('/query-relationships-author', function() {
 Route::get('/query-relationships-tags', function() {
 	
 	# Get the first book as an example
-	$book = Book::first();
+	$book = Book::orderBy('title')->first();
 		
 	# Get the tags from this book using the "tags" dynamic property
 	# "tags" corresponds to the the relationship method defined in the Book model
@@ -541,15 +518,15 @@ Route::get('/query-relationships-tags', function() {
 
 
 /*-------------------------------------------------------------------------------------------------
-// !query-eager-loading-tags
+// !query-eager-loading-authors
 -------------------------------------------------------------------------------------------------*/
-Route::get('/query-eager-loading-tags', function() {
+Route::get('/query-eager-loading-authors', function() {
 	
-	# Without eager loading: N+1: 1 Query to get all books plus 1 query for each author (4 total)
-	$books = Book::get();
+	# Without eager loading (4 queries)
+	$books = Book::orderBy('title')->get();
 	
-	# Eager loading: 2 Queries: 1 query to get all the books, 1 query to get all the authors
-	//$books = Book::with('author')->get();
+	# With eager loading (2 queries)
+	//$books = Book::with('author')->orderBy('title')->get();
 	
 	foreach($books as $book) {
 		echo $book->author->name.' wrote '.$book->title.'<br>';
@@ -562,30 +539,24 @@ Route::get('/query-eager-loading-tags', function() {
 
 
 /*-------------------------------------------------------------------------------------------------
-// !query-eager-loading-tags-and-author
+// !query-eager-loading-tags-and-authors
 -------------------------------------------------------------------------------------------------*/
 Route::get('/query-eager-loading-tags-and-authors', function() {
 	
-	# Without eager loading: 7 Queries
-	//$books = Book::get();
+	# Without eager loading (7 Queries)
+	$books = Book::orderBy('title')->get();
 
-	# With eager loading: 3 Queries
-	// $books = Book::with('tags','author')->get(); 
+	# With eager loading (3 Queries)
+	//$books = Book::with('author','tags')->orderBy('title')->get();
 	
 	# Print results
 	foreach($books as $book) {
-		
 		echo $book->title.' by '.$book->author->name.'<br>';
-		foreach($book->tags as $tag) {
-			echo $tag->name.", ";
-		}
-		
+		foreach($book->tags as $tag) echo $tag->name.", ";
 		echo "<br><br>";
 	}
 		
 });
-
-
 
 
 
@@ -600,9 +571,9 @@ Route::get('/environment', function() {
 	
 });
 
+# Use this route to test your environment/debugging settings
 Route::get('/trigger-error',function() {
 	
 	$foo = new Foobar;
 	
 });
-
