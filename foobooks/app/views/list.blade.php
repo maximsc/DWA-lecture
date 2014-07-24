@@ -17,7 +17,7 @@
 
 	<br><br>
 		
-	@if(!empty(trim($query)))
+	@if(trim($query) != ""))
 		<p>You searched for <strong>{{{ $query }}}</strong></p>
 		
 		@if(count($books) == 0)
