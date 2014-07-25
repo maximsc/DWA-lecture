@@ -13,7 +13,7 @@
 
 App::before(function($request)
 {
-	//
+
 });
 
 
@@ -43,6 +43,7 @@ Route::filter('auth', function()
 		}
 		else
 		{
+			# FYI: This method will store the requested path in a session variable so we can use Redirect::intended() after they have logged in
 			return Redirect::guest('login');
 		}
 	}

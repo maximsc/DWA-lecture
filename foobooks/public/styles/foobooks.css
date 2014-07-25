@@ -24,3 +24,13 @@ h2 {
 a:link, a:visited, a:active, a:hover {
 	text-decoration:underline;
 }
+
+.flash-message {
+	width:100%;
+	position:absolute;
+	top:0;
+	left:0;
+	background-color:yellow;
+	text-align:center;
+	padding:5px;
+}

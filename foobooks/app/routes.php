@@ -1,18 +1,121 @@
 <?php
 
-
-
 /*-------------------------------------------------------------------------------------------------
 Home page
 -------------------------------------------------------------------------------------------------*/
 Route::get('/', function() {
-		
-	return View::make('index');				
+					
+	return View::make('index');		
 	
 });
 
 
 
+
+
+/*-------------------------------------------------------------------------------------------------
+Demonstration of evil
+// !csrf-example
+-------------------------------------------------------------------------------------------------*/
+Route::get('/csrf-example', function() {
+	
+	return View::make('csrf-example');
+	
+});
+
+
+/*-------------------------------------------------------------------------------------------------
+// !get login
+-------------------------------------------------------------------------------------------------*/
+Route::get('/login',
+	array(
+		'before' => 'guest',
+		function() {
+			return View::make('login');
+		}
+	)
+);
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !post login
+-------------------------------------------------------------------------------------------------*/
+Route::post('/login', array('before' => 'csrf', function() {
+	
+	$credentials = Input::only('email', 'password');
+	
+	if (Auth::attempt($credentials, $remember = true)) {
+		return Redirect::intended('/')->with('flash_message', 'Welcome Back!');
+	}
+	else {
+		return Redirect::to('/login')->with('flash_message', 'Log in failed; please try again.');
+	}
+	
+	return Redirect::to('login');
+	
+}));
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !get logout
+-------------------------------------------------------------------------------------------------*/
+Route::get('/logout', function() {
+	
+	# Log out
+	Auth::logout();
+	
+	# Send them to the homepage
+	return Redirect::to('/');
+	
+});
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------
+// !get signup
+-------------------------------------------------------------------------------------------------*/
+Route::get('/signup',
+	array(
+		'before' => 'guest',
+		function() {
+	    	return View::make('signup');
+		}
+	)
+);
+
+
+/*-------------------------------------------------------------------------------------------------
+// !post signup
+-------------------------------------------------------------------------------------------------*/
+Route::post('/signup', array('before' => 'csrf', function() {
+
+	$user = new User;
+	$user->email    = Input::get('email');
+	$user->password = Hash::make(Input::get('password'));
+	
+	try {
+		$user->save();
+	}
+	catch (Exception $e) {
+		return Redirect::to('/signup')
+			->with('flash_message', 'Sign up failed; please try again.')
+			->withInput();
+	}
+	
+	# Log in
+	Auth::login($user);
+	
+	return Redirect::to('/list')->with('flash_message', 'Welcome to Foobooks!');
+	
+}));
 
 
 /*-------------------------------------------------------------------------------------------------
@@ -30,8 +133,12 @@ Route::get('/routes', function() {
 
 
 
+
+
+/*-------------------------------------------------------------------------------------------------
 # List books/search results of books
-Route::get('/list/{format?}', function($format = 'html') {
+-------------------------------------------------------------------------------------------------*/
+Route::get('/list/{format?}', array('before'=>'auth', function($format = 'html') {
 
 	$query = Input::get('query');
 	
@@ -69,7 +176,7 @@ Route::get('/list/{format?}', function($format = 'html') {
 	elseif($format == 'pdf') {
 		return "This is the pdf (Coming soon).";
 	}	
-});
+}));
 
 
 
