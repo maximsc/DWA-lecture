@@ -51,7 +51,9 @@ Route::post('/login', array('before' => 'csrf', function() {
 		return Redirect::intended('/')->with('flash_message', 'Welcome Back!');
 	}
 	else {
-		return Redirect::to('/login')->with('flash_message', 'Log in failed; please try again.');
+		return Redirect::to('/login')
+			->with('flash_message', 'Log in failed; please try again.')
+			->withInput();
 	}
 	
 	return Redirect::to('login');
