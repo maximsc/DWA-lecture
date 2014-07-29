@@ -11,13 +11,20 @@
 
 @section('content')
 
-	View as:
-	<a href='/list/json' target='_blank'>JSON</a> | 
-	<a href='/list/pdf' target='_blank'>PDF</a>
+	<h2>Books</h2>
 
-	<br><br>
-		
-	@if(trim($query) != ""))
+	<div>
+		View as:
+		<a href='/book/?format=json' target='_blank'>JSON</a> | 
+		<a href='/book/?format=pdf' target='_blank'>PDF</a>
+	</div>
+	
+	<div>
+		<a href='/book/create'>+ Add a book</a>
+	</div>
+
+
+	@if(trim($query) != "")
 		<p>You searched for <strong>{{{ $query }}}</strong></p>
 		
 		@if(count($books) == 0)
@@ -33,18 +40,19 @@
 			
 			<h2>{{ $book['title'] }}</h2>
 			
-			By {{ $book['author']->name }}
-			
-			<p>
-				{{ $book['published'] }}
+			<p>			
+			{{ $book['author']->name }} {{ $book['published'] }}
 			</p>
-			
+
 			<p>
-				
+				@foreach($book['tags'] as $tag) 
+					{{ $tag->name }}
+				@endforeach
 			</p>
 			
 			<a href='{{ $book['cover'] }}'>Purchase this book...</a>
-			
+			<br>
+			<a href='/book/edit/{{ $book->id }}'>Edit</a>
 		</section>
 	
 	@endforeach

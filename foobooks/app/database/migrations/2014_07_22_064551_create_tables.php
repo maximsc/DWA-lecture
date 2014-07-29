@@ -47,9 +47,10 @@ class CreateTables extends Migration {
 			$table->string('purchase_link');
 			
 			# Define foreign keys...
-			$table->foreign('author_id')->references('id')->on('authors');
-			
-								
+			$table->foreign('author_id')
+				->references('id')
+				->on('authors');
+		
 		});
 		
 		
@@ -96,6 +97,21 @@ class CreateTables extends Migration {
 	 * @return void
 	 */
 	public function down() {
+	
+		Schema::table('books', function($table) {
+			$table->dropForeign('books_author_id_foreign'); # table_fields_foreign
+		});
+
+		Schema::table('book_tag', function($table) {
+			$table->dropForeign('book_tag_book_id_foreign'); # table_fields_foreign
+			$table->dropForeign('book_tag_tag_id_foreign');  # table_fields_foreign
+		});
+		
+		# Alternative: Here's the above but done with SQL:
+		//DB::statement('ALTER TABLE `books` DROP FOREIGN KEY `books_author_id_foreign`');
+		//DB::statement('ALTER TABLE `book_tag` DROP FOREIGN KEY `book_tag_book_id_foreign`');
+		//DB::statement('ALTER TABLE `book_tag` DROP FOREIGN KEY `book_tag_tag_id_foreign`');
+		
 		Schema::drop('authors');
 		Schema::drop('books');
 		Schema::drop('tags');

@@ -9,6 +9,9 @@
 		"badcow/lorem-ipsum": "dev-master",
 		"barryvdh/laravel-debugbar": "1.*@dev"
 	},
+	"require-dev": {
+		"codeception/codeception": "dev-master"
+	},
 	"autoload": {
 		"classmap": [
 			"app/commands",

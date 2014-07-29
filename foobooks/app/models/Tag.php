@@ -7,7 +7,7 @@ class Tag extends Eloquent {
 	
 	# Relationship method...
     public function books() {
-	    
+        
 	    # Tags belongs to many Books
 	    return $this->belongsToMany('Book');
     }

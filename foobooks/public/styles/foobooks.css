@@ -13,7 +13,7 @@ section {
 }
 
 h2 {
-	margin:0;
+	
 }
 
 .cover {
@@ -33,4 +33,13 @@ a:link, a:visited, a:active, a:hover {
 	background-color:yellow;
 	text-align:center;
 	padding:5px;
+}
+
+label {
+	display:block;
+	text-transform:uppercase;
+}
+
+.error {
+	color:red;
 }
