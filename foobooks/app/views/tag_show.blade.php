@@ -22,7 +22,7 @@
 	<a href='/tag/{{ $tag->id }}/edit'>Edit</a>
 		
 	{{---- Delete -----}}
-	{{ Form::model($tag, array('method' => 'DELETE', 'action' => ['TagController@destroy', $tag->id])) }}
+	{{ Form::open(['method' => 'DELETE', 'action' => ['TagController@destroy', $tag->id]]) }}
 		<a href='javascript:void(0)' onClick='parentNode.submit();return false;'>Delete</a>
 	{{ Form::close() }}
 	

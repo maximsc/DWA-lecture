@@ -4,7 +4,7 @@ class UserController extends BaseController {
 
 
 	public function __construct() {
-        $this->beforeFilter('guest', array('only' => array('getLogin')));	
+        $this->beforeFilter('guest', array('only' => array('getLogin','getSignup')));	
     }
 
 	
@@ -16,18 +16,21 @@ class UserController extends BaseController {
 	}
 	
 	public function postSignup() {
-					
+		
+		# Step 1) Define the rules			
 		$rules = array(
-			'email' => 'email|unique:users,email',
-			'password' => 'min:6'	
+			'email' => 'required|email|unique:users,email',
+			'password' => 'required|min:6'	
 		);			
-					
+			
+		# Step 2) 		
 		$validator = Validator::make(Input::all(), $rules);
 		
+		# Step 3
 		if($validator->fails()) {
 			
 			return Redirect::to('/signup')
-				->with('flash_message', 'Sign up failed; please try again.')
+				->with('flash_message', 'Sign up failed; please fix the errors listed below.')
 				->withInput()
 				->withErrors($validator);
 		}

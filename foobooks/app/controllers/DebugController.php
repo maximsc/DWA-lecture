@@ -2,7 +2,10 @@
 
 class DebugController extends BaseController {
 
-	# http://localhost/debug
+
+	/*-------------------------------------------------------------------------------------------------
+	GET http://localhost/debug/index
+	-------------------------------------------------------------------------------------------------*/
 	public function getIndex() {
 		
 		echo '<pre>';
@@ -49,14 +52,25 @@ class DebugController extends BaseController {
 	}
 	
 	
-	# http://localhost/debug/trigger-error
+	
+	
+	
+	/*-------------------------------------------------------------------------------------------------
+	GET: http://localhost/debug/trigger-error
+	-------------------------------------------------------------------------------------------------*/
 	public function getTriggerError() {
 		
 		$foo = new Foobar;
 		
 	}
 
-	# http://localhost/debug/routes
+
+
+
+
+	/*-------------------------------------------------------------------------------------------------
+	GET http://localhost/debug/routes
+	-------------------------------------------------------------------------------------------------*/
 	public function getRoutes() {
 		
 		$routeCollection = Route::getRoutes();
@@ -67,7 +81,13 @@ class DebugController extends BaseController {
 
 	}
 
-	# http://localhost/debug/books-json
+
+
+
+
+	/*-------------------------------------------------------------------------------------------------
+	GET http://localhost/debug/books-json
+	-------------------------------------------------------------------------------------------------*/
 	public function getBooksJson() {
 				
 		# Instantiating an object of the Library class

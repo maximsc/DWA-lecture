@@ -8,7 +8,6 @@
 
 @section('content')
 
-
 	{{ Form::model($tag, ['method' => 'put', 'action' => ['TagController@update', $tag->id]]) }}
 	
 		<h2>Update: {{ $tag->name }}</h2>

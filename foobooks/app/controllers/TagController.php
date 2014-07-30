@@ -54,14 +54,14 @@ class TagController extends \BaseController {
 	 * @return Response
 	 */
 	public function show($id) {
-	
+
 		try {
 			$tag = Tag::findOrFail($id);
 		}
 		catch(Exception $e) {
 			return Redirect::to('/tag')->with('flash_message', 'Tag not found');
 		}
-							
+
 		return View::make('tag_show')->with('tag', $tag);
 	}
 
@@ -123,11 +123,8 @@ class TagController extends \BaseController {
 		catch(Exception $e) {
 			return Redirect::to('/tag')->with('flash_message', 'Tag not found');
 		}
-				
-		# First delete any book_tag relationships	
-		DB::statement('DELETE FROM book_tag WHERE tag_id = ?', array($id));	
-		
-		# Then destroy the tag itself
+			
+		# Note there's a `deleting` Model event which makes sure book_tag entries are also destroyed
 		Tag::destroy($id);
 		
 		return Redirect::action('TagController@index')->with('flash_message','Your tag has been deleted.');

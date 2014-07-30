@@ -12,9 +12,10 @@ Route::get('/', function() {
 // ! User
 Explicit Routing
 -------------------------------------------------------------------------------------------------*/
-Route::get('/signup', ['before' => 'guest', 'uses' => 'UserController@getSignup'] );
-Route::post('/signup', ['before' => 'csrf', 'uses' => 'UserController@postSignup'] );
+# Note: the beforeFilter for 'guest' on getSignup and getLogin is handled in the Controller
+Route::get('/signup', 'UserController@getSignup'); 
 Route::get('/login', 'UserController@getLogin' );
+Route::post('/signup', ['before' => 'csrf', 'uses' => 'UserController@postSignup'] );
 Route::post('/login', ['before' => 'csrf', 'uses' => 'UserController@postLogin'] );
 Route::get('/logout', ['before' => 'auth', 'uses' => 'UserController@getLogout'] );
 
@@ -46,10 +47,10 @@ Route::controller('debug', 'DebugController');
 
 /*
 # Explicit routing
-Route::get('/debug', 'DebugController@index');
-Route::get('/trigger-error', 'Debug Controller@triggerError');
-Route::get('/data', 'DebugController@getBooksJson');
-Route::get('/routes', 'DebugController@routes');
+Route::get('/debug/', 'DebugController@index');
+Route::get('/debug/trigger-error', 'Debug Controller@triggerError');
+Route::get('/debug/books-json', 'DebugController@getBooksJson');
+Route::get('/debug/routes', 'DebugController@routes');
 */
 
 
