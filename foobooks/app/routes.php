@@ -1,11 +1,10 @@
 <?php
 
 /*-------------------------------------------------------------------------------------------------
-Home page
+// ! Index
 -------------------------------------------------------------------------------------------------*/
-Route::get('/', function() {			
-	return View::make('index');
-});
+Route::get('/', 'IndexController@getIndex');
+
 
 
 /*-------------------------------------------------------------------------------------------------
@@ -37,6 +36,9 @@ Route::post('/book/edit/{id}', 'BookController@postEdit');
 Route::get('/book/create', 'BookController@getCreate');
 Route::post('/book/create', 'BookController@postCreate');
 
+Route::get('/book/search', 'BookController@getSearch');
+Route::post('/book/search', 'BookController@postSearch');
+
 
 /*-------------------------------------------------------------------------------------------------
 // ! Debug
@@ -58,8 +60,9 @@ Route::get('/debug/routes', 'DebugController@routes');
 // ! Misc Demo
 Explicit Routing
 -------------------------------------------------------------------------------------------------*/
-Route::get('/csrf-example', 'DemoController@csrf');
-Route::get('/collections', 'DemoController@collections');
+Route::get('/demo/csrf-example', 'DemoController@csrf');
+Route::get('/demo/collections', 'DemoController@collections');
+Route::get('/demo/js-vars', 'DemoController@jsVars');
 
 
 /*-------------------------------------------------------------------------------------------------

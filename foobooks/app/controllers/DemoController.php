@@ -8,7 +8,19 @@ class DemoController extends BaseController {
 		return View::make('demo_csrf');
 		
 	}
-	
+
+	public function jsVars() {
+		
+		# Bind a variable called 'foo'
+		JavaScript::put(['foo' => 'bar']);
+		
+		# Bind a variable called 'bar'
+		JavaScript::put(['email' => Auth::user()->email]);
+		
+		return View::make('demo_jsVars');
+		
+	}
+
 	public function crudCreate() {
 		
 		# Instantiate the book model

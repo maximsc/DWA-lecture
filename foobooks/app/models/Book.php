@@ -35,5 +35,36 @@ class Book extends Eloquent {
 		}
 	}
 	
+	
+	/*-------------------------------------------------------------------------------------------------
+	
+	-------------------------------------------------------------------------------------------------*/
+	public static function search($query) {
+		
+		# If there is a query, search the library with that query
+		if($query) {
+		
+			# Eager load tags and author
+	 		$books = Book::with('tags','author')
+	 		->whereHas('author', function($q) use($query) {
+			    $q->where('name', 'LIKE', "%$query%");
+			})
+			->orWhereHas('tags', function($q) use($query) {
+			    $q->where('name', 'LIKE', "%$query%");
+			})
+			->orWhere('title', 'LIKE', "%$query%")
+			->orWhere('published', 'LIKE', "%$query%")
+			->get();
+					 		   	 		   		
+		}
+		# Otherwise, just fetch all books
+		else {
+			# Eager load tags and author
+			$books = Book::with('tags','author')->get();
+		}
+		
+		return $books;	
+	}
+	
 	    
 }

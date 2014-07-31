@@ -15,6 +15,54 @@ class BookController extends \BaseController {
 		$this->beforeFilter('auth');
 		
 	}
+	
+	
+	/*-------------------------------------------------------------------------------------------------
+	
+	-------------------------------------------------------------------------------------------------*/
+	public function getSearch() {
+				
+		return View::make('book_search');
+		
+	}
+	
+	
+	/*-------------------------------------------------------------------------------------------------
+	http://localhost/book/search
+	Demonstrate of Ajax
+	-------------------------------------------------------------------------------------------------*/
+	public function postSearch() {
+		
+		if(Request::ajax()) {
+		
+			$query  = Input::get('query');
+			
+			# We're demoing two possible return formats: JSON or HTML
+			$format = Input::get('format');
+
+			# Do the actual query
+	        $books  = Book::search($query);
+	        
+	        # If the request is for JSON, just send the books back as JSON
+	        if($format == 'json') {
+		        return Response::json($books);
+	        }
+	        # Otherwise, loop through the results building the HTML View we'll return
+	        elseif($format == 'html') {
+	        
+
+		        $results = '';	        
+				foreach($books as $book) {
+					# Created a "stub" of a view called book_search_result.php; all it is is a stub of code to display a book
+					# For each book, we'll add a new stub to the results
+					$results .= View::make('book_search_result')->with('book', $book)->render();   
+				}
+	        
+				# Return the HTML/View to JavaScript...
+				return $results;
+			}
+		}
+	}
 
 
 	/*-------------------------------------------------------------------------------------------------
@@ -27,27 +75,7 @@ class BookController extends \BaseController {
 		
 		$query  = Input::get('query');
 		
-		# If there is a query, search the library with that query
-		if($query) {
-		
-			# Eager load tags and author
-	 		$books = Book::with('tags','author')
-	 		->whereHas('author', function($q) use($query) {
-			    $q->where('name', 'LIKE', "%$query%");
-			})
-			->orWhereHas('tags', function($q) use($query) {
-			    $q->where('name', 'LIKE', "%$query%");
-			})
-			->orWhere('title', 'LIKE', "%$query%")
-			->orWhere('published', 'LIKE', "%$query%")
-			->get();
-					 		   	 		   		
-		}
-		# Otherwise, just fetch all books
-		else {
-			# Eager load tags and author
-			$books = Book::with('tags','author')->get();
-		}
+		$books = Book::search($query);
 		
 		# Decide on output method...
 		# Default - HTML

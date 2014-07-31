@@ -22,7 +22,8 @@
 	@if(Auth::check())
 		<a href='/logout'>Log out {{ Auth::user()->email; }}</a><br><br>
 		<a href='/book'>View all Books</a> | 
-		<a href='/tag'>View all Tags</a> 
+		<a href='/tag'>View all Tags</a>  |
+		<a href='/book/search'>Search (with Ajax!)</a>
 	@else 
 		<a href='/signup'>Sign up</a> or <a href='/login'>Log in</a>
 	@endif
@@ -30,6 +31,8 @@
 	@yield('content')
 	
 	@yield('body')
+	
+	@yield('footer')
 		
 </body>
 

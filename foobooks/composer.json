@@ -7,7 +7,8 @@
 		"laravel/framework": "4.2.*",
 		"paste/pre": "dev-master",
 		"badcow/lorem-ipsum": "dev-master",
-		"barryvdh/laravel-debugbar": "1.*@dev"
+		"barryvdh/laravel-debugbar": "1.*@dev",
+		"laracasts/utilities": "dev-master"
 	},
 	"require-dev": {
 		"codeception/codeception": "dev-master"
